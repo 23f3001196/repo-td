@@ -1,27 +1,35 @@
-# .github/workflows/daily-commit.yml
 name: Daily Commit Action
 
 on:
   schedule:
-    - cron: '30 18 * * *'  # Runs daily at 18:30 UTC (midnight IST)
-  workflow_dispatch:  # Allows manual trigger for testing
+    - cron: '30 18 * * *'  # Runs daily at 18:30 UTC (00:30 IST)
+  workflow_dispatch:  # Manual trigger for testing
+
+permissions:
+  contents: write  # Required for git push
 
 jobs:
   daily-commit:
     runs-on: ubuntu-latest
     
     steps:
-      - name: 23f3001196@ds.study.iitm.ac.in Step 📧
+      - name: Checkout repository
         uses: actions/checkout@v4
-        
-      - name: Create daily commit
+        with:
+          persist-credentials: true  # Enable git push with GITHUB_TOKEN
+      
+      - name: Email step [23f3001196@ds.study.iitm.ac.in] 
+        run: echo "Daily workflow run initiated - 23f3001196@ds.study.iitm.ac.in"
+      
+      - name: Create daily log
         run: |
-          echo "Daily automated commit - $(date)" > daily-log.txt
-          
-      - name: Commit changes
+          echo "Daily automated commit - $(date -u '+%Y-%m-%d %H:%M UTC')" > daily-log.txt
+      
+      - name: Commit and push changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add daily-log.txt
-          git commit -m "Daily commit: $(date '+%Y-%m-%d %H:%M UTC')"
+          git commit -m "Daily commit: $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push
+
